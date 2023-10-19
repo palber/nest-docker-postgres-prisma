@@ -1,22 +1,21 @@
-import { CacheModule, Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import * as redisStore from 'cache-manager-redis-store';
-import { ConfigModule } from '@nestjs/config';
-import { PrismaModule } from './services/prisma/prisma.module';
+import { Module } from '@nestjs/common';
+import { TweetsModule } from './modules/tweets/tweets.module';
+import { ApiModule } from './api/api.module';
+import { PrismaModule } from './database/prisma.module';
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
-    CacheModule.register({
-      isGlobal: true,
-      store: redisStore,
-      host: process.env.REDIS_HOST,
-      port: process.env.REDIS_PORT,
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      autoSchemaFile: true,
     }),
+    ApiModule,
+    TweetsModule,
     PrismaModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
